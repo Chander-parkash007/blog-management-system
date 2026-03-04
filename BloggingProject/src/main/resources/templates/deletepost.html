@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Post | Modern Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --danger-gradient: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            --safe-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --dark-bg: #0f0f1e;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 30px 90px rgba(0, 0, 0, 0.4);
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at top left, rgba(238, 9, 121, 0.2), transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(255, 106, 0, 0.2), transparent 50%),
+                radial-gradient(ellipse at center, rgba(102, 126, 234, 0.1), transparent 70%);
+            z-index: 0;
+            animation: backgroundShift 20s ease infinite alternate;
+        }
+        
+        @keyframes backgroundShift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-30px, 30px) scale(1.05); }
+        }
+        
+        .particle {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: float linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .delete-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(238, 9, 121, 0.3);
+            border-radius: 24px;
+            padding: 60px 50px;
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            animation: fadeInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .warning-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: var(--danger-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 10px 40px rgba(238, 9, 121, 0.4);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(238, 9, 121, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 50px rgba(238, 9, 121, 0.6); }
+        }
+        
+        .warning-icon i {
+            font-size: 3.5rem;
+            color: white;
+        }
+        
+        .delete-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #ff9a9a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        
+        .delete-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .post-details {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(238, 9, 121, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .detail-icon i {
+            color: #ff6a00;
+        }
+        
+        .detail-content {
+            flex: 1;
+        }
+        
+        .detail-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+        
+        .warning-message {
+            background: rgba(238, 9, 121, 0.15);
+            border: 2px solid rgba(238, 9, 121, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .warning-message i {
+            font-size: 1.5rem;
+            color: #ff6a00;
+            flex-shrink: 0;
+        }
+        
+        .warning-text {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            text-align: left;
+        }
+        
+        .warning-text strong {
+            color: #ff6a00;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-delete-confirm {
+            flex: 1;
+            padding: 20px 40px;
+            background: var(--danger-gradient);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(238, 9, 121, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-delete-confirm::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-delete-confirm:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+        
+        .btn-delete-confirm:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(238, 9, 121, 0.5);
+        }
+        
+        .btn-delete-confirm span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--border-glass);
+            border-radius: 16px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            color: white;
+        }
+        
+        .confirm-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .confirm-checkbox:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .confirm-checkbox input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #ee0979;
+        }
+        
+        .confirm-checkbox label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .delete-container { padding: 40px 30px; }
+            .delete-title { font-size: 2.2rem; }
+            .action-buttons { flex-direction: column; }
+            .post-details { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particle" style="width: 3px; height: 3px; left: 10%; animation-duration: 15s; animation-delay: 0s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 20%; animation-duration: 12s; animation-delay: 2s;"></div>
+    <div class="particle" style="width: 4px; height: 4px; left: 30%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 40%; animation-duration: 14s; animation-delay: 1s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 50%; animation-duration: 16s; animation-delay: 3s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 60%; animation-duration: 13s; animation-delay: 5s;"></div>
+    <div class="particle" style="width: 4px; height: 4px; left: 70%; animation-duration: 17s; animation-delay: 2s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 80%; animation-duration: 15s; animation-delay: 4s;"></div>
+    
+    <div class="container">
+        <div class="delete-container">
+            <!-- Warning Icon -->
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <!-- Title -->
+            <h1 class="delete-title">Delete Post?</h1>
+            <p class="delete-subtitle">
+                This action cannot be undone. Are you sure you want to permanently delete this post?
+            </p>
+            
+            <!-- Post Details -->
+            <div class="post-details">
+                <div class="detail-row">
+                    <div class="detail-icon">
+                        <i class="fas fa-hashtag"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">Post ID</div>
+                        <div class="detail-value" th:text="${post.id}">123</div>
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-icon">
+                        <i class="fas fa-heading"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">Title</div>
+                        <div class="detail-value" th:text="${post.title}">Getting Started with Web Development</div>
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="detail-content">
+                        <div class="detail-label">Author</div>
+                        <div class="detail-value" th:text="${post.author}">John Doe</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Warning Message -->
+            <div class="warning-message">
+                <i class="fas fa-shield-alt"></i>
+                <div class="warning-text">
+                    <strong>Warning:</strong> Once deleted, this post will be permanently removed from the database. All associated data will be lost forever.
+                </div>
+            </div>
+            
+            <!-- Confirmation Checkbox -->
+            <div class="confirm-checkbox">
+                <input type="checkbox" id="confirmDelete">
+                <label for="confirmDelete">I understand this action is permanent</label>
+            </div>
+            
+            <!-- Action Buttons -->
+            <form th:action="@{/posts/delete}" method="POST" id="deleteForm">
+                <input type="hidden" name="id" th:value="${post.id}">
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-delete-confirm" id="deleteBtn" disabled>
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Yes, Delete Forever</span>
+                    </button>
+                    <a th:href="@{/}" class="btn-cancel">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const checkbox = document.getElementById('confirmDelete');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const deleteForm = document.getElementById('deleteForm');
+        
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                deleteBtn.disabled = false;
+                deleteBtn.style.opacity = '1';
+                deleteBtn.style.cursor = 'pointer';
+            } else {
+                deleteBtn.disabled = true;
+                deleteBtn.style.opacity = '0.5';
+                deleteBtn.style.cursor = 'not-allowed';
+            }
+        });
+        
+        deleteBtn.style.opacity = '0.5';
+        deleteBtn.style.cursor = 'not-allowed';
+        
+        deleteForm.addEventListener('submit', function(e) {
+            if (!checkbox.checked) {
+                e.preventDefault();
+                alert('Please confirm that you understand this action is permanent.');
+                return;
+            }
+            
+            const finalConfirm = confirm(
+                'FINAL WARNING!\n\n' +
+                'This is your last chance to cancel.\n' +
+                'Click OK to permanently delete this post, or Cancel to go back.'
+            );
+            
+            if (!finalConfirm) {
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>

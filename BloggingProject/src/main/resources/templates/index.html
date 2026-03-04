@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Blog Posts | Modern Dashboard</title>
+    
+    <!-- Google Fonts - Modern & Distinctive -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --danger-gradient: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            --dark-bg: #0f0f1e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 30px 90px rgba(0, 0, 0, 0.4);
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at top left, rgba(102, 126, 234, 0.15), transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(118, 75, 162, 0.15), transparent 50%),
+                radial-gradient(ellipse at center, rgba(238, 9, 121, 0.1), transparent 70%);
+            z-index: 0;
+            animation: backgroundShift 20s ease infinite alternate;
+        }
+        
+        @keyframes backgroundShift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-30px, 30px) scale(1.05); }
+        }
+        
+        /* Floating Particles */
+        .particle {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: float linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #a0a0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: -2px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+        
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        /* New Post Button */
+        .btn-new-post {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 16px 32px;
+            background: var(--success-gradient);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .btn-new-post:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .btn-new-post i {
+            font-size: 1.2rem;
+        }
+        
+        /* Control Panel - Glassmorphism */
+        .control-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .control-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .control-title i {
+            color: #667eea;
+        }
+        
+        .control-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 18px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid var(--border-glass);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .input-field::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-action {
+            padding: 18px 36px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-action:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-action span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-delete {
+            background: var(--danger-gradient);
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(238, 9, 121, 0.4);
+        }
+        
+        /* Table Container */
+        .table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+        
+        /* Custom Table */
+        .posts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .posts-table thead {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .posts-table th {
+            padding: 25px 30px;
+            text-align: left;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border-glass);
+        }
+        
+        .posts-table tbody tr {
+            border-bottom: 1px solid var(--border-glass);
+            transition: all 0.3s ease;
+        }
+        
+        .posts-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .posts-table td {
+            padding: 25px 30px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            vertical-align: middle;
+        }
+        
+        .posts-table td:first-child {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            padding: 80px 40px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease 0.6s backwards;
+        }
+        
+        .empty-icon {
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 25px;
+        }
+        
+        .empty-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        
+        .empty-description {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .btn-start {
+            padding: 16px 40px;
+            background: var(--success-gradient);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .page-title {
+                font-size: 3rem;
+            }
+            
+            .btn-new-post {
+                position: static;
+                margin: 0 auto 30px;
+            }
+            
+            .control-form {
+                flex-direction: column;
+            }
+            
+            .input-group {
+                width: 100%;
+            }
+            
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .control-panel {
+                padding: 25px;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            .posts-table {
+                min-width: 600px;
+            }
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Success/Error Messages */
+        .message {
+            padding: 18px 24px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .message-success {
+            background: rgba(17, 153, 142, 0.15);
+            border: 1px solid rgba(56, 239, 125, 0.3);
+            color: #38ef7d;
+        }
+        
+        .message-error {
+            background: rgba(238, 9, 121, 0.15);
+            border: 1px solid rgba(255, 106, 0, 0.3);
+            color: #ff6a00;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particle" style="width: 3px; height: 3px; left: 10%; animation-duration: 15s; animation-delay: 0s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 20%; animation-duration: 12s; animation-delay: 2s;"></div>
+    <div class="particle" style="width: 4px; height: 4px; left: 30%; animation-duration: 18s; animation-delay: 4s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 40%; animation-duration: 14s; animation-delay: 1s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 50%; animation-duration: 16s; animation-delay: 3s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 60%; animation-duration: 13s; animation-delay: 5s;"></div>
+    <div class="particle" style="width: 4px; height: 4px; left: 70%; animation-duration: 17s; animation-delay: 2s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 80%; animation-duration: 15s; animation-delay: 4s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 90%; animation-duration: 19s; animation-delay: 1s;"></div>
+    
+    <!-- New Post Button -->
+    <a href="/new" class="btn-new-post">
+        <i class="fas fa-plus-circle"></i>
+        <span>New Post</span>
+    </a>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="page-title">All Blog Posts</h1>
+            <p class="page-subtitle">Manage Your Content</p>
+        </div>
+        
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <h2 class="control-title">
+                <i class="fas fa-cog"></i>
+                Update or Delete a Post by ID
+            </h2>
+            <form class="control-form" action="/manage-post" method="POST">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        name="postId" 
+                        class="input-field" 
+                        placeholder="Enter Post ID"
+                        required
+                    >
+                </div>
+                <button type="submit" name="action" value="edit" class="btn-action btn-edit">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Post</span>
+                </button>
+                <button type="submit" name="action" value="delete" class="btn-action btn-delete">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Delete Post</span>
+                </button>
+            </form>
+        </div>
+        
+        <!-- Posts Table -->
+        <div class="table-container">
+            <table class="posts-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-heading"></i> Title</th>
+                        <th><i class="fas fa-user"></i> Author</th>
+                        <th><i class="fas fa-file-alt"></i> Content</th>
+                    </tr>
+                </thead>
+                <tbody id="posts-body">
+                        <tr th:each="post : ${listPosts}">
+                        <td th:text="${post.title}">Title</td>
+                        <td th:text="${post.author}">Author</td>
+                        <td th:text="${post.content}">Content</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+            
+            <!-- Empty State (Show when no posts) -->
+            <div class="empty-state">
+                <i class="fas fa-inbox empty-icon"></i>
+                <h3 class="empty-title">Create Your New Post</h3>
+                <p class="empty-description">Start creating amazing content for your blog</p>
+                <a href="/new" class="btn-start">
+                    <i class="fas fa-plus-circle"></i>
+                    Create Your New Post
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add ripple effect to buttons
+        document.querySelectorAll('.btn-action, .btn-new-post, .btn-start').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = button.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+                
+                button.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+        
+        // Input field animation
+        document.querySelectorAll('.input-field').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Form validation
+        document.querySelector('.control-form').addEventListener('submit', function(e) {
+            const input = this.querySelector('input[name="postId"]');
+            if (!input.value.trim()) {
+                e.preventDefault();
+                input.style.borderColor = '#ee0979';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
